@@ -1,9 +1,20 @@
 'use strict';
 
 module.exports = {
-  development: {},
+  development: {
+    client: 'pg',
+    connection: 'postgres://localhost/bookshelf_dev',
+    migrations: {
+      tableName: 'knex_migrations'
 
-  test: {},
+    }
+  },
 
-  production: {}
-};
+  test: {
+    client:'pg',
+    connection:'postgres://localhost/bookshelf_test',
+    migrations: {
+      tableName: 'knex_migrations'
+    }
+  },
+}
