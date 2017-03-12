@@ -15,7 +15,6 @@ const forKey = require('dotenv')
 router.get('/token', (req, res, next) => {
   knex('users')
   .then((usersTable) => {
-    // console.log('This is the usertable',usersTable);
     let userPass ;
     if(!req.cookies.token){
       userPass = false;
@@ -31,21 +30,20 @@ router.get('/token', (req, res, next) => {
 });
 
 router.post('/token', (req, res, next) => {
- return knex('users')
-    .where('email', req.body.email)
+ return knex('users').where('email', req.body.email)
     .then((userInfo) => {
       let user = userInfo[0];
       if(!user) {
         res.set('Content-Type', 'text/plain');
         res.status(400).send('Bad email or password');
-      }
-        let nonHashedgivenPass = req.body.password ;
+      } else {
+        let nonHashedgivenPass = req.body.password;
         let storedPass = user.hashed_password;
-    bcrypt.compare(nonHashedgivenPass, storedPass)
+    return bcrypt.compare(nonHashedgivenPass, storedPass)
     .then(( passedCompar ) => {
       delete user.hashed_password;
-      const claim = {userId: user.id};
-      const token = jwt.sign(claim, process.env.JWT_KEY, { expiresIn: '7 days'})
+      const claim = {userId: user.id, iss:'https://localhost:8000'};
+      const token = jwt.sign(claim, process.env.JWT_KEY)
          res.cookie('token', token, {
               path: '/',
               httpOnly: true,
@@ -53,19 +51,25 @@ router.post('/token', (req, res, next) => {
               secure: router.get('env') === 'development'
             });
 
-            res.status(200).send(humps.camelizeKeys(user));
+            res.status(200).send(humps.camelizeKeys(user))
+            res.clearCookie();
     })
       .catch((passedComp) => {
         res.set('Content-Type', 'plain/text');
         res.status(400);
         res.send('Bad email or password')
       })
+    }
     })
 })
 
-router.DELETE('/token', (req, res, next) => {
+router.delete('/token', (req, res, next) => {
   return knex('users')
-  .
+    .then((usersToEdit) => {
+      res.clearCookie('token', {path:'/'});
+      res.set('Content-Type', 'application/json');
+      res.status(200).send('true')
+    })
 })
 
 
