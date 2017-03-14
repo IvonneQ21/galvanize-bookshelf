@@ -1,41 +1,5 @@
 'use strict';
 
-// const express = require('express');
-//
-// // eslint-disable-next-line new-cap
-// const router = express.Router();
-// const humps = require('humps');
-// const knex = require('../knex');
-// const coockieParser = require('cookie-parser')
-// const jwt = require('jsonwebtoken');
-// const myKey = process.env.JWT_KEY;
-
-// YOUR CODE HERE
-// function userAuthen(req, res, next){
-//     jwt.verify(req.cookies.token, myKey, (err, decode) => {
-//       if(err){
-//         res.set('content-Type', 'text/plain');
-//         res.status(401).send("Unauthorized");
-//       } else {
-//         req.token = decode;
-//       return next();
-//       }
-//     })
-// }
-//
-// router.get('/favorites', userAuthen, (req, res, next ) => {
-//   knex('favorites')
-//     .join('books', 'favorites.book_id','=','books.id')
-//     .where('')
-//     .then((specificbook)=>{
-//       res.status(200).send(specificbook);
-//     })
-//     .catch((err)=> {
-//       res.send(err);
-//     });
-// })
-//
-// router
 const express = require('express');
 const router = express.Router();
 const knex = require("../knex");
@@ -51,8 +15,6 @@ const authorize = function(req, res, next) {
      res.set("Content-Type", "text/plain");
      return res.status(401).send('Unauthorized');
    } else {
-   console.log("paylod here" , payload);
-  //  req.claim = decoded;
   tokenID = payload.userId;
    next();
  }
@@ -108,11 +70,6 @@ router.post('/favorites', authorize, (req, res, next)=> {
   })
 })
 
-// router.get('/favorites/check', authorize, (req, res, next) => {
-//  const bookId = req.query.bookId;
-//  knex('favorites')
-//
-// })
 router.delete('/favorites', authorize, (req, res, next) => {
   const bookId = req.body.bookId;
   let deletedBook;
@@ -134,31 +91,6 @@ router.delete('/favorites', authorize, (req, res, next) => {
     next(err);
   });
 });
-// router.delete('/favorites', authorize, (req, res, next) => {
-//   const bookId = req.body.bookId;
-//     let bookToRe;
-//     return knex('favorites')
-//     .where('book_id', bookId).first()
-//     .then((bookRow) => {
-//       if(!bookRow){
-//         return next()
-//       }
-//       bookToRe = bookRow;
-//
-//     knex('favorites')
-//     .del()
-//     .where('book_id', bookId)
-//     .returning('*'),
-//     res.json(camelizeKeys(bookToRe));
-//     })
-//     //  . then((deleteBook)=> {
-//     //    console.log("I'm here in the deletedBook", deleteBook);
-//     //    delete deleteBook[0].id;
-//
-//     .catch((err) => {
-//        next(err);
-//      })
-//    })
 
 
 module.exports = router;
