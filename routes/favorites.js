@@ -24,12 +24,12 @@ const authorize = function(req, res, next) {
 router.get('/favorites', authorize, (req, res, next) => {
  knex('favorites')
  .innerJoin('books', 'books.id', 'favorites.book_id')
- .where('favorites.user_id', req.claim.userId)
+ .where('favorites.user_id', tokenID)
  .orderBy('books.title', 'ASC')
  .then((rows) => {
    const favorites = camelizeKeys(rows);
-
-   res.send(favorites);
+   res.set('Content-Type', 'application/json');
+   res.json(favorites);
  })
  .catch((err) => {
    next(err);
@@ -44,7 +44,7 @@ router.get('/favorites/check', authorize, (req, res, next) => {
   .orderBy('books.title', 'ASC')
   .then((book) => {
     if(book[0]){
-      res.send(true)
+      res.send(true);
     } else {
       res.send(false);
     }
@@ -59,11 +59,11 @@ router.post('/favorites', authorize, (req, res, next)=> {
   knex('favorites')
   .insert([{
     'book_id': bookId,
-    'user_id': tokenId
+    'user_id': tokenID
   }])
   .returning('*')
   .then((book) => {
-    res.send(camelizeKeys(book[0]));
+    res.json(camelizeKeys(book[0]));
   })
   .catch((err) => {
     console.err(err);
