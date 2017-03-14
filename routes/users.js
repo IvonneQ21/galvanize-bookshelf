@@ -5,7 +5,8 @@ const knex = require('../knex');
 const humps = require('humps');
 const router = express.Router();
 const bcrypt = require('bcrypt-as-promised');
-
+const jwt = require('jsonwebtoken');
+const cert = process.env.JWT_KEY;
 
 //generating the salt. using the bcrypt.hash() func and
 // insert the emailed hashed password into the users table.

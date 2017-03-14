@@ -3,30 +3,24 @@
 const express = require('express');
 const knex = require('../knex');
 const humps = require('humps');
-const coockie = require('cookie-parser');
+const coockieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const bcrypt = require('bcrypt-as-promised');
 const forKey = require('dotenv')
+const myKey = process.env.JTW_KEY;
 
 
 // YOUR CODE HERE
 
 router.get('/token', (req, res, next) => {
-  knex('users')
-  .then((usersTable) => {
-    let userPass ;
     if(!req.cookies.token){
-      userPass = false;
-      } else {
-        userPass = true;
-      }
-    res.set('content-Type', 'application/json');
-    res.send(userPass);
-  })
-  .catch((err) => {
-    next(err);
-  });
+      res.set('content-Type', 'application/json');
+      res.send('false');
+    } else {
+        res.set('content-Type', 'application/json');
+        res.send('true');
+    }
 });
 
 router.post('/token', (req, res, next) => {
@@ -67,7 +61,7 @@ router.delete('/token', (req, res, next) => {
   return knex('users')
     .then((usersToEdit) => {
       res.clearCookie('token', {path:'/'});
-      res.set('Content-Type', 'application/json');
+      res.set('Content-Type', 'text/plain');
       res.status(200).send('true')
     })
 })
